@@ -57,7 +57,7 @@ def GetBool(Value, Data):
 def GetSloshData(Data):
   Horizontal = GetBool('Horizontal', Data)
   Vertical   = GetBool('Vertical'  , Data)
-  Freq       = GetFloat('Frequency', Data)
+  Freq       = GetFloatValue('Frequency', Data)
 
 
 if __name__ == "__main__":
