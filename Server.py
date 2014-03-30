@@ -67,6 +67,5 @@ def GetSloshData(Data):
   Serial.write("<Slosh,")
   Serial.write("Null,Null,"+str(Freq) + ",Null>")
 
-
 if __name__ == "__main__":
   app.run()
