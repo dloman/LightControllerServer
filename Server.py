@@ -24,8 +24,8 @@ class hello:
         return GetColors(Data,'j')
       elif 'fColor' in Type:
         return GetColors(Data,'f')
-      elif 'Slosh' in Type:
-        return GetSloshData(Data)
+      elif 'Mode' in Type:
+        return GetModeData(Data)
       else:
         return 'ERROR'
 
@@ -62,10 +62,16 @@ def GetBool(Value, Data):
     return False
 
 ###############################################################################
-def GetSloshData(Data):
-  Freq       = GetFloat('Frequency', Data)
-  Serial.write("<Slosh,")
-  Serial.write("Null,Null,"+str(Freq) + ",Null>")
+def GetModeData(Data):
+  if 'Mode' in Data:
+    Mode = Data['Mode'].replace(' ','')
+  else:
+    Mode = "RollingColor"
+  Frequency = GetFloat('Frequency', Data)
+  Serial.write("<Mode,")
+  Serial.write(str(Mode)+","+str(Frequency) + ",Null,Null>")
 
+###############################################################################
+###############################################################################
 if __name__ == "__main__":
   app.run()
