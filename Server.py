@@ -2,7 +2,6 @@
 
 import web
 import serial
-import RPi.GPIO as gpio
 
 urls = ('/(.*)', 'hello')
 app = web.application(urls, globals())
@@ -10,13 +9,6 @@ try:
  Serial = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
 except:
   print 'Serial Connection could not be established'
-  exit()
-try:
-  gpio.setmode(gpio.BOARD)
-  gpio.setup(12, gpio.OUT)
-  gpio.output(12,1)
-except:
-  print 'GPIO could not setup properly'
   exit()
 
 ###############################################################################
@@ -79,9 +71,11 @@ def GetModeData(Data):
 def GetLaserToggleData(Data):
   if 'Value' in Data:
     if 'true' in Data['Value']:
-      gpio.output(12,0)
+      print 'ON'
+      Serial.write('<Laser,1,Null,Null,Null>')
       return
-  gpio.output(12,1)
+  Serial.write('<Laser,0,Null,Null,Null>')
+  print 'off'
 
 ###############################################################################
 ###############################################################################
