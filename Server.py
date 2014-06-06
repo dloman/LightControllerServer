@@ -2,20 +2,26 @@
 
 import web
 import serial
+import RPi.GPIO as gpio
 
 urls = ('/(.*)', 'hello')
 app = web.application(urls, globals())
-Serial = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+try:
+ Serial = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+except:
+  print 'Serial Connection could not be established'
+  exit()
+try:
+  gpio.setmode(gpio.BOARD)
+  gpio.setup(12, gpio.OUT)
+  gpio.output(12,1)
+except:
+  print 'GPIO could not setup properly'
+  exit()
 
 ###############################################################################
 ###############################################################################
 class hello:
-  def GET(self, name):
-    if not name:
-      name = 'World'
-    return 'Hello, ' + name + '!'
-
-###############################################################################
   def POST(*args,**kwargs):
     Data  = web.input()
     if 'Type' in Data:
@@ -26,6 +32,8 @@ class hello:
         return GetColors(Data,'f')
       elif 'Mode' in Type:
         return GetModeData(Data)
+      elif 'LaserToggle' in Type:
+        return GetLaserToggleData(Data)
       else:
         return 'ERROR'
 
@@ -40,10 +48,6 @@ def GetColors(Data,FadeOrJump):
   Serial.write(str(Alpha)+ ',')
   Serial.write(str(Red) + ',')
   Serial.write(str(Green) + ',' + str(Blue) + ">")
-  print 'Red =',   Red
-  print 'Blue =',  Blue
-  print 'Green =', Green
-  print 'Alpha =', Alpha
   return Red, Blue, Green, Alpha
 
 ###############################################################################
@@ -72,6 +76,19 @@ def GetModeData(Data):
   Serial.write(str(Mode)+","+str(Frequency) + ",Null,Null>")
 
 ###############################################################################
+def GetLaserToggleData(Data):
+  if 'Value' in Data:
+    if 'true' in Data['Value']:
+      gpio.output(12,0)
+      return
+  gpio.output(12,1)
+
+###############################################################################
 ###############################################################################
 if __name__ == "__main__":
-  app.run()
+  web.config.debug = False
+  try:
+    app.run()
+  except:
+    print 'webpy didnt work'
+    exit()
